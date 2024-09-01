@@ -1,6 +1,9 @@
 <script setup>
 import { ref,onMounted } from 'vue'; 
 import axios from 'axios';
+const todoTasks = ref([]);
+const doingTasks = ref([]);
+const finishTasks = ref([]);
 const isShowPopupCreate = ref(false);
 const showPopupCreate=()=>{
     // Gán ngày giờ hiện tại cho biến date khi mở popup tạo mới
@@ -34,12 +37,29 @@ const showPopupEdit=(item)=>{
 const closePopupEdit=()=>{
   isShowPopupEdit.value = false;
 }
-const data = ref([]);
+// const data = ref([]);
 const getData= async()=>{
   try {
     const res = await axios.get('https://66403f25a7500fcf1a9d5ef0.mockapi.io/project_1/api/List_User');
     console.log("getData: ",res.data);
-    data.value = res.data;
+    const task = res.data;
+    // data.value = res.data;
+    // Reset các mảng trước khi phân loại lại
+    todoTasks.value = [];
+    doingTasks.value = [];
+    finishTasks.value = [];
+    task.forEach(task => {
+      if(task.status === 'todo'){
+        todoTasks.value.push(task);
+      }
+      else if(task.status === 'doing'){
+        doingTasks.value.push(task);
+      }
+      else if(task.status === 'finish'){
+        finishTasks.value.push(task);
+      }
+    });
+
   } catch (error) {
     console.error("Error fetching data:", error);
   }
@@ -103,7 +123,24 @@ const updateItem =async()=>{
   try {
     const res = await axios.put(`https://66403f25a7500fcf1a9d5ef0.mockapi.io/project_1/api/List_User/${createData.value.newID}`,updateItem);
     console.log("cap nhat thanh cong :",res.data);
-    
+    // Di chuyển task giữa các mảng dựa trên status mới
+    if(createData.value.status === 'todo'){
+      todoTasks.value.push(res.data);
+    }
+    else if(createData.value.status === 'doing'){
+      doingTasks.value.push(res.data);
+    }
+    else if(createData.value.status === 'finish'){
+      finishTasks.value.push(res.data);
+    }
+
+    // Xóa task cũ khỏi mảng ban đầu
+    const originalArray = [todoTasks, doingTasks, finishTasks].find(array => array.value.some(task => task.id === createData.value.newID));
+    const index = originalArray.value.findIndex(task => task.id === createData.value.newID);
+    if (index !== -1) {
+      originalArray.value.splice(index, 1);
+    }
+
     closePopupEdit();
     getData();
   } catch (error) {
@@ -140,9 +177,9 @@ const getCurrentDateTime = () => {
         <div class="todo-line">
           <div class="todo">
             <p>Todo</p>
-            <span>{{ data.length }}</span>
+            <span>{{ todoTasks.length }}</span>
           </div>
-          <div v-for="(item, index) in data" :key="item.id" class="box-content">
+          <div v-for="(item, index) in todoTasks" :key="item.id" class="box-content">
             <div class="title">
               <h4>{{ item.categories }}</h4>
               <div class="edit">
@@ -167,13 +204,55 @@ const getCurrentDateTime = () => {
         <div class="doing-line">
           <div class="doing">
             <p>Doing</p>
-            <span></span>
+            <span>{{ doingTasks.length }}</span>
+          </div>
+          <div v-for="(item, index) in doingTasks" :key="item.id">
+            <div class="title">
+              <h4>{{ item.categories }}</h4>
+              <div class="edit">
+                <button @click="showPopupEdit(item)" class="edit"><Icon icon="material-symbols:edit-document-outline-rounded"></Icon></button>
+                <button @click="showPopupMess(item.id)" class="delete"><Icon icon="material-symbols:delete-outline"></Icon></button>
+              </div>
+            </div>
+            <div class="body">
+              <div class="content-top">
+                <p>{{ item.title }}</p>
+              </div>
+              <div class="content-bottom">
+                <h5>{{ item.content }}</h5>
+              </div>
+            </div>
+            <div class="date">
+              <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
+              <span class="hour">{{ item.date }}</span>
+            </div>
           </div>
         </div>
         <div class="finish-line">
           <div class="finish">
             <p>Finish</p>
-            <span></span>
+            <span>{{ finishTasks.length }}</span>
+          </div>
+          <div v-for="(item, index) in finishTasks" :key="item.id">
+            <div class="title">
+              <h4>{{ item.categories }}</h4>
+              <div class="edit">
+                <button @click="showPopupEdit(item)" class="edit"><Icon icon="material-symbols:edit-document-outline-rounded"></Icon></button>
+                <button @click="showPopupMess(item.id)" class="delete"><Icon icon="material-symbols:delete-outline"></Icon></button>
+              </div>
+            </div>
+            <div class="body">
+              <div class="content-top">
+                <p>{{ item.title }}</p>
+              </div>
+              <div class="content-bottom">
+                <h5>{{ item.content }}</h5>
+              </div>
+            </div>
+            <div class="date">
+              <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
+              <span class="hour">{{ item.date }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -189,20 +268,6 @@ const getCurrentDateTime = () => {
         <input v-model="dataNew.categories" type="text" name="" id="" placeholder="cotegories">
         <input v-model="dataNew.title" type="text" name="" id="" placeholder="title">
         <input v-model="dataNew.content" type="text" name="" id="" placeholder="content">
-        <div class="checkbox">
-          <div class="item">
-            <input type="radio" name="check" value="todo" id="todo">
-            <label for="todo">Todo</label>
-          </div>
-          <div class="item">
-            <input type="radio" name="check" value="doing" id="doing">
-            <label for="doing">Doing</label>
-          </div>
-          <div class="item">
-            <input type="radio" name="check" value="finish" id="finish">
-            <label for="finish">Finish</label>
-          </div>
-        </div>
         <button type="submit" class="btn-submit">Submit</button>
       </form>
     </div>
@@ -435,30 +500,6 @@ input[type="text"]{
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-.checkbox{
-  display: flex;
-  justify-content: space-between;
-}
-.checkbox .item{
-  margin-right: 5px;
-  display: flex;
-  align-items: center;
-}
-.item input[type="radio"]{
-  margin-right: 5px;
-}
-.btn-submit{
-  padding: 7px;
-  margin-top: 10px;
-  border-radius: 5px;
-  border: none;
-  background: #02b2e7;
-  color: #f6f0f0;
-  font-weight: bold;
-  font-size: 17px;
-}
-
-
 
 /* popup mess */
 .popup-overlay {
@@ -567,5 +608,24 @@ input[type="text"]{
   color: #f6f0f0;
   font-weight: bold;
   font-size: 17px;
+}
+
+
+.popup form input {
+  margin-bottom: 10px;
+  padding: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.popup form .btn-submit {
+  background-color: #00a5d9;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.popup form .btn-submit:hover {
+  background-color: #007da1;
 }
 </style>
