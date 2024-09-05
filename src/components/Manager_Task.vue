@@ -1,10 +1,12 @@
 <script setup>
-import { ref,onMounted } from 'vue'; 
+import { ref,onMounted ,computed} from 'vue'; 
 import axios from 'axios';
 const todoTasks = ref([]);
 const doingTasks = ref([]);
 const finishTasks = ref([]);
+
 const isShowPopupCreate = ref(false);
+
 const showPopupCreate=()=>{
     // Gán ngày giờ hiện tại cho biến date khi mở popup tạo mới
     dataNew.value.date = getCurrentDateTime();
@@ -149,10 +151,6 @@ const updateItem =async()=>{
 }
 
 
-
-
-
-
 const getCurrentDateTime = () => {
   const now = new Date();
   // Định dạng ngày và giờ theo dạng 'YYYY-MM-DD HH:mm:ss'
@@ -164,6 +162,13 @@ const getCurrentDateTime = () => {
   const seconds = String(now.getSeconds()).padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
+
+const filteredTasks = (status) => {
+  return allTasks.value.filter(task => task.status === status);
+};
+const allTasks = computed(() => {
+  return [...todoTasks.value, ...doingTasks.value, ...finishTasks.value];
+});
 </script>
 
 <template>
@@ -177,9 +182,9 @@ const getCurrentDateTime = () => {
         <div class="todo-line">
           <div class="todo">
             <p>Todo</p>
-            <span>{{ todoTasks.length }}</span>
+            <span>{{ filteredTasks('todo').length }}</span>
           </div>
-          <div v-for="(item, index) in todoTasks" :key="item.id" class="box-content">
+          <div v-for="(item, index) in filteredTasks('todo')" :key="item.id" class="box-content">
             <div class="title">
               <h4>{{ item.categories }}</h4>
               <div class="edit">
@@ -204,9 +209,9 @@ const getCurrentDateTime = () => {
         <div class="doing-line">
           <div class="doing">
             <p>Doing</p>
-            <span>{{ doingTasks.length }}</span>
+            <span>{{ filteredTasks('doing').length }}</span>
           </div>
-          <div v-for="(item, index) in doingTasks" :key="item.id">
+          <div v-for="(item, index) in filteredTasks('doing')" :key="item.id" class="box-content">
             <div class="title">
               <h4>{{ item.categories }}</h4>
               <div class="edit">
@@ -231,9 +236,9 @@ const getCurrentDateTime = () => {
         <div class="finish-line">
           <div class="finish">
             <p>Finish</p>
-            <span>{{ finishTasks.length }}</span>
+            <span>{{ filteredTasks('finish').length }}</span>
           </div>
-          <div v-for="(item, index) in finishTasks" :key="item.id">
+          <div v-for="(item, index) in filteredTasks('finish')" :key="item.id" class="box-content">
             <div class="title">
               <h4>{{ item.categories }}</h4>
               <div class="edit">
