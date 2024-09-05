@@ -1,5 +1,6 @@
 <script setup>
 import { ref,onMounted ,computed} from 'vue'; 
+import draggable from 'vuedraggable';
 import axios from 'axios';
 const todoTasks = ref([]);
 const doingTasks = ref([]);
@@ -163,12 +164,12 @@ const getCurrentDateTime = () => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-const filteredTasks = (status) => {
-  return allTasks.value.filter(task => task.status === status);
-};
-const allTasks = computed(() => {
-  return [...todoTasks.value, ...doingTasks.value, ...finishTasks.value];
-});
+// const filteredTasks = (status) => {
+//   return allTasks.value.filter(task => task.status === status);
+// };
+// const allTasks = computed(() => {
+//   return [...todoTasks.value, ...doingTasks.value, ...finishTasks.value];
+// });
 </script>
 
 <template>
@@ -180,86 +181,110 @@ const allTasks = computed(() => {
     <main>
       <div class="box">
         <div class="todo-line">
-          <div class="todo">
-            <p>Todo</p>
-            <span>{{ filteredTasks('todo').length }}</span>
-          </div>
-          <div v-for="(item, index) in filteredTasks('todo')" :key="item.id" class="box-content">
-            <div class="title">
-              <h4>{{ item.categories }}</h4>
-              <div class="edit">
-                <button @click="showPopupEdit(item)" class="edit"><Icon icon="material-symbols:edit-document-outline-rounded"></Icon></button>
-                <button @click="showPopupMess(item.id)" class="delete"><Icon icon="material-symbols:delete-outline"></Icon></button>
-              </div>
-            </div>
-            <div class="body">
-              <div class="content-top">
-                <p>{{ item.title }}</p>
-              </div>
-              <div class="content-bottom">
-                <h5>{{ item.content }}</h5>
-              </div>
-            </div>
-            <div class="date">
-              <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
-              <span class="hour">{{ item.date }}</span>
+    <div class="todo">
+      <p>Todo</p>
+      <span>{{ todoTasks.length }}</span>
+    </div>
+    <draggable v-model="todoTasks" tag="div" item-key="id" class="box-content">
+      <template #item="{element}">
+        <div class="box-content">
+          <div class="title">
+            <h4>{{ element.categories }}</h4>
+            <div class="edit">
+              <button @click="showPopupEdit(element)" class="edit">
+                <Icon icon="material-symbols:edit-document-outline-rounded"></Icon>
+              </button>
+              <button @click="showPopupMess(element.id)" class="delete">
+                <Icon icon="material-symbols:delete-outline"></Icon>
+              </button>
             </div>
           </div>
-        </div>
-        <div class="doing-line">
-          <div class="doing">
-            <p>Doing</p>
-            <span>{{ filteredTasks('doing').length }}</span>
+          <div class="body">
+            <div class="content-top">
+              <p>{{ element.title }}</p>
+            </div>
+            <div class="content-bottom">
+              <h5>{{ element.content }}</h5>
+            </div>
           </div>
-          <div v-for="(item, index) in filteredTasks('doing')" :key="item.id" class="box-content">
-            <div class="title">
-              <h4>{{ item.categories }}</h4>
-              <div class="edit">
-                <button @click="showPopupEdit(item)" class="edit"><Icon icon="material-symbols:edit-document-outline-rounded"></Icon></button>
-                <button @click="showPopupMess(item.id)" class="delete"><Icon icon="material-symbols:delete-outline"></Icon></button>
-              </div>
-            </div>
-            <div class="body">
-              <div class="content-top">
-                <p>{{ item.title }}</p>
-              </div>
-              <div class="content-bottom">
-                <h5>{{ item.content }}</h5>
-              </div>
-            </div>
-            <div class="date">
-              <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
-              <span class="hour">{{ item.date }}</span>
-            </div>
+          <div class="date">
+            <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
+            <span class="hour">{{ element.date }}</span>
           </div>
         </div>
-        <div class="finish-line">
-          <div class="finish">
-            <p>Finish</p>
-            <span>{{ filteredTasks('finish').length }}</span>
+      </template>
+    </draggable>
+  </div>
+  <div class="doing-line">
+    <div class="doing">
+      <p>doing</p>
+      <span>{{ doingTasks.length }}</span>
+    </div>
+    <draggable v-model="doingTasks" tag="div" item-key="id" class="box-content">
+      <template #item="{element}">
+        <div class="box-content">
+          <div class="title">
+            <h4>{{ element.categories }}</h4>
+            <div class="edit">
+              <button @click="showPopupEdit(element)" class="edit">
+                <Icon icon="material-symbols:edit-document-outline-rounded"></Icon>
+              </button>
+              <button @click="showPopupMess(element.id)" class="delete">
+                <Icon icon="material-symbols:delete-outline"></Icon>
+              </button>
+            </div>
           </div>
-          <div v-for="(item, index) in filteredTasks('finish')" :key="item.id" class="box-content">
-            <div class="title">
-              <h4>{{ item.categories }}</h4>
-              <div class="edit">
-                <button @click="showPopupEdit(item)" class="edit"><Icon icon="material-symbols:edit-document-outline-rounded"></Icon></button>
-                <button @click="showPopupMess(item.id)" class="delete"><Icon icon="material-symbols:delete-outline"></Icon></button>
-              </div>
+          <div class="body">
+            <div class="content-top">
+              <p>{{ element.title }}</p>
             </div>
-            <div class="body">
-              <div class="content-top">
-                <p>{{ item.title }}</p>
-              </div>
-              <div class="content-bottom">
-                <h5>{{ item.content }}</h5>
-              </div>
+            <div class="content-bottom">
+              <h5>{{ element.content }}</h5>
             </div>
-            <div class="date">
-              <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
-              <span class="hour">{{ item.date }}</span>
-            </div>
+          </div>
+          <div class="date">
+            <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
+            <span class="hour">{{ element.date }}</span>
           </div>
         </div>
+      </template>
+    </draggable>
+  </div>
+  <div class="finish-line">
+    <div class="finish">
+      <p>finish</p>
+      <span>{{ finishTasks.length }}</span>
+    </div>
+    <draggable v-model="finishTasks" tag="div" item-key="id" class="box-content">
+      <template #item="{element}">
+        <div class="box-content">
+          <div class="title">
+            <h4>{{ element.categories }}</h4>
+            <div class="edit">
+              <button @click="showPopupEdit(element)" class="edit">
+                <Icon icon="material-symbols:edit-document-outline-rounded"></Icon>
+              </button>
+              <button @click="showPopupMess(element.id)" class="delete">
+                <Icon icon="material-symbols:delete-outline"></Icon>
+              </button>
+            </div>
+          </div>
+          <div class="body">
+            <div class="content-top">
+              <p>{{ element.title }}</p>
+            </div>
+            <div class="content-bottom">
+              <h5>{{ element.content }}</h5>
+            </div>
+          </div>
+          <div class="date">
+            <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
+            <span class="hour">{{ element.date }}</span>
+          </div>
+        </div>
+      </template>
+    </draggable>
+  </div>
       </div>
     </main>
   </div>
@@ -296,7 +321,6 @@ const allTasks = computed(() => {
     <div class="popup">
       <Icon @click="closePopupEdit" class="icon-cancel" icon="material-symbols-light:cancel-outline-rounded"></Icon>
       <h3>Edit todo</h3>
-      <p>Current status: {{ createData.status }}</p>
       <form @submit.prevent="updateItem" action="">
         <input v-model="createData.categories" type="text" name="" id="" placeholder="cotegories">
         <input v-model="createData.title" type="text" name="" id="" placeholder="title">
@@ -570,6 +594,7 @@ input[type="text"]{
   height: auto;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: #ccc;
 }
 .icon-cancel{
   position: absolute;
@@ -603,6 +628,7 @@ input[type="text"]{
 }
 .item input[type="radio"]{
   margin-right: 5px;
+  margin-top: 10px;
 }
 .btn-submit{
   padding: 7px;
