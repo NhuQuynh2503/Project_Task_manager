@@ -43,30 +43,45 @@ const closePopupEdit=()=>{
 // const data = ref([]);
 const getData= async()=>{
   try {
-    const res = await axios.get('https://66403f25a7500fcf1a9d5ef0.mockapi.io/project_1/api/List_User');
-    console.log("getData: ",res.data);
-    const task = res.data;
-    // data.value = res.data;
-    // Reset các mảng trước khi phân loại lại
-    todoTasks.value = [];
-    doingTasks.value = [];
-    finishTasks.value = [];
-    task.forEach(task => {
-      if(task.status === 'todo'){
-        todoTasks.value.push(task);
-      }
-      else if(task.status === 'doing'){
-        doingTasks.value.push(task);
-      }
-      else if(task.status === 'finish'){
-        finishTasks.value.push(task);
-      }
-    });
+    const storedTodoTasks = localStorage.getItem('todoTasks');
+    const storedDoingTasks = localStorage.getItem('doingTasks');
+    const storedFinishTasks = localStorage.getItem('finishTasks');
 
+    if(storedTodoTasks && storedDoingTasks && storedFinishTasks){
+      todoTasks.value = JSON.parse(storedTodoTasks);
+      doingTasks.value = JSON.parse(storedDoingTasks);
+      finishTasks.value = JSON.parse(storedFinishTasks);
+    }
+    else{
+      const res = await axios.get('https://66403f25a7500fcf1a9d5ef0.mockapi.io/project_1/api/List_User');
+      console.log("getData: ",res.data);
+      const task = res.data;
+      // data.value = res.data;
+      // Reset các mảng trước khi phân loại lại
+      todoTasks.value = [];
+      doingTasks.value = [];
+      finishTasks.value = [];
+      task.forEach(task => {
+        if(task.status === 'todo'){
+          todoTasks.value.push(task);
+        }
+        else if(task.status === 'doing'){
+          doingTasks.value.push(task);
+        }
+        else if(task.status === 'finish'){
+          finishTasks.value.push(task);
+        }
+      });
+
+      localStorage.setItem('todoTasks', JSON.stringify(todoTasks.value));
+      localStorage.setItem('doingTasks',JSON.stringify(doingTasks.value));
+      localStorage.setItem('finishTasks',JSON.stringify(finishTasks.value));
+    }
   } catch (error) {
     console.error("Error fetching data:", error);
   }
 }
+
 onMounted(()=>{
   getData();
 })
@@ -170,6 +185,13 @@ const getCurrentDateTime = () => {
 // const allTasks = computed(() => {
 //   return [...todoTasks.value, ...doingTasks.value, ...finishTasks.value];
 // });
+
+const updateLocalStorage=()=>{
+  localStorage.setItem('todoTasks', JSON.stringify(todoTasks.value));
+  localStorage.setItem('doingTasks', JSON.stringify(doingTasks.value));
+  localStorage.setItem('finishTasks', JSON.stringify(finishTasks.value));
+}
+
 </script>
 
 <template>
@@ -185,7 +207,7 @@ const getCurrentDateTime = () => {
             <p>Todo</p>
             <span>{{ todoTasks.length }}</span>
           </div>
-          <draggable v-model="todoTasks" tag="div" item-key="id" class="box-content" group="tasks">
+          <draggable v-model="todoTasks" tag="div" item-key="id" class="box-content" group="tasks"  @end="updateLocalStorage">
             <template #item="{element}">
               <div class="box-content">
                 <div class="title">
@@ -220,7 +242,7 @@ const getCurrentDateTime = () => {
           <p>doing</p>
           <span>{{ doingTasks.length }}</span>
         </div>
-        <draggable v-model="doingTasks" tag="div" item-key="id" class="box-content" group="tasks">
+        <draggable v-model="doingTasks" tag="div" item-key="id" class="box-content" group="tasks"  @end="updateLocalStorage">
           <template #item="{element}">
             <div class="box-content">
               <div class="title">
@@ -255,7 +277,7 @@ const getCurrentDateTime = () => {
           <p>finish</p>
           <span>{{ finishTasks.length }}</span>
         </div>
-        <draggable v-model="finishTasks" tag="div" item-key="id" class="box-content" group="tasks">
+        <draggable v-model="finishTasks" tag="div" item-key="id" class="box-content" group="tasks"  @end="updateLocalStorage">
           <template #item="{element}">
             <div class="box-content">
               <div class="title">
