@@ -163,7 +163,7 @@ const getCurrentDateTime = () => {
   const seconds = String(now.getSeconds()).padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
-
+// Ghep 3 mang thanh 1 mang
 // const filteredTasks = (status) => {
 //   return allTasks.value.filter(task => task.status === status);
 // };
@@ -181,113 +181,113 @@ const getCurrentDateTime = () => {
     <main>
       <div class="box">
         <div class="todo-line">
-    <div class="todo">
-      <p>Todo</p>
-      <span>{{ todoTasks.length }}</span>
-    </div>
-    <draggable v-model="todoTasks" tag="div" item-key="id" class="box-content">
-      <template #item="{element}">
-        <div class="box-content">
-          <div class="title">
-            <h4>{{ element.categories }}</h4>
-            <div class="edit">
-              <button @click="showPopupEdit(element)" class="edit">
-                <Icon icon="material-symbols:edit-document-outline-rounded"></Icon>
-              </button>
-              <button @click="showPopupMess(element.id)" class="delete">
-                <Icon icon="material-symbols:delete-outline"></Icon>
-              </button>
-            </div>
+          <div class="todo">
+            <p>Todo</p>
+            <span>{{ todoTasks.length }}</span>
           </div>
-          <div class="body">
-            <div class="content-top">
-              <p>{{ element.title }}</p>
-            </div>
-            <div class="content-bottom">
-              <h5>{{ element.content }}</h5>
-            </div>
-          </div>
-          <div class="date">
-            <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
-            <span class="hour">{{ element.date }}</span>
-          </div>
+          <draggable v-model="todoTasks" tag="div" item-key="id" class="box-content" group="tasks">
+            <template #item="{element}">
+              <div class="box-content">
+                <div class="title">
+                  <h4>{{ element.categories }}</h4>
+                  <div class="edit">
+                    <button @click="showPopupEdit(element)" class="edit">
+                      <Icon icon="material-symbols:edit-document-outline-rounded"></Icon>
+                    </button>
+                    <button @click="showPopupMess(element.id)" class="delete">
+                      <Icon icon="material-symbols:delete-outline"></Icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="body">
+                  <div class="content-top">
+                    <p>{{ element.title }}</p>
+                  </div>
+                  <div class="content-bottom">
+                    <h5>{{ element.content }}</h5>
+                  </div>
+                </div>
+                <div class="date">
+                  <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
+                  <span class="hour">{{ element.date }}</span>
+                </div>
+              </div>
+            </template>
+          </draggable>
         </div>
-      </template>
-    </draggable>
-  </div>
-  <div class="doing-line">
-    <div class="doing">
-      <p>doing</p>
-      <span>{{ doingTasks.length }}</span>
-    </div>
-    <draggable v-model="doingTasks" tag="div" item-key="id" class="box-content">
-      <template #item="{element}">
-        <div class="box-content">
-          <div class="title">
-            <h4>{{ element.categories }}</h4>
-            <div class="edit">
-              <button @click="showPopupEdit(element)" class="edit">
-                <Icon icon="material-symbols:edit-document-outline-rounded"></Icon>
-              </button>
-              <button @click="showPopupMess(element.id)" class="delete">
-                <Icon icon="material-symbols:delete-outline"></Icon>
-              </button>
-            </div>
-          </div>
-          <div class="body">
-            <div class="content-top">
-              <p>{{ element.title }}</p>
-            </div>
-            <div class="content-bottom">
-              <h5>{{ element.content }}</h5>
-            </div>
-          </div>
-          <div class="date">
-            <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
-            <span class="hour">{{ element.date }}</span>
-          </div>
+      <div class="doing-line">
+        <div class="doing">
+          <p>doing</p>
+          <span>{{ doingTasks.length }}</span>
         </div>
-      </template>
-    </draggable>
-  </div>
-  <div class="finish-line">
-    <div class="finish">
-      <p>finish</p>
-      <span>{{ finishTasks.length }}</span>
-    </div>
-    <draggable v-model="finishTasks" tag="div" item-key="id" class="box-content">
-      <template #item="{element}">
-        <div class="box-content">
-          <div class="title">
-            <h4>{{ element.categories }}</h4>
-            <div class="edit">
-              <button @click="showPopupEdit(element)" class="edit">
-                <Icon icon="material-symbols:edit-document-outline-rounded"></Icon>
-              </button>
-              <button @click="showPopupMess(element.id)" class="delete">
-                <Icon icon="material-symbols:delete-outline"></Icon>
-              </button>
+        <draggable v-model="doingTasks" tag="div" item-key="id" class="box-content" group="tasks">
+          <template #item="{element}">
+            <div class="box-content">
+              <div class="title">
+                <h4>{{ element.categories }}</h4>
+                <div class="edit">
+                  <button @click="showPopupEdit(element)" class="edit">
+                    <Icon icon="material-symbols:edit-document-outline-rounded"></Icon>
+                  </button>
+                  <button @click="showPopupMess(element.id)" class="delete">
+                    <Icon icon="material-symbols:delete-outline"></Icon>
+                  </button>
+                </div>
+              </div>
+              <div class="body">
+                <div class="content-top">
+                  <p>{{ element.title }}</p>
+                </div>
+                <div class="content-bottom">
+                  <h5>{{ element.content }}</h5>
+                </div>
+              </div>
+              <div class="date">
+                <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
+                <span class="hour">{{ element.date }}</span>
+              </div>
             </div>
-          </div>
-          <div class="body">
-            <div class="content-top">
-              <p>{{ element.title }}</p>
-            </div>
-            <div class="content-bottom">
-              <h5>{{ element.content }}</h5>
-            </div>
-          </div>
-          <div class="date">
-            <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
-            <span class="hour">{{ element.date }}</span>
-          </div>
-        </div>
-      </template>
-    </draggable>
-  </div>
+          </template>
+        </draggable>
       </div>
+      <div class="finish-line">
+        <div class="finish">
+          <p>finish</p>
+          <span>{{ finishTasks.length }}</span>
+        </div>
+        <draggable v-model="finishTasks" tag="div" item-key="id" class="box-content" group="tasks">
+          <template #item="{element}">
+            <div class="box-content">
+              <div class="title">
+                <h4>{{ element.categories }}</h4>
+                <div class="edit">
+                  <button @click="showPopupEdit(element)" class="edit">
+                    <Icon icon="material-symbols:edit-document-outline-rounded"></Icon>
+                  </button>
+                  <button @click="showPopupMess(element.id)" class="delete">
+                    <Icon icon="material-symbols:delete-outline"></Icon>
+                  </button>
+                </div>
+              </div>
+              <div class="body">
+                <div class="content-top">
+                  <p>{{ element.title }}</p>
+                </div>
+                <div class="content-bottom">
+                  <h5>{{ element.content }}</h5>
+                </div>
+              </div>
+              <div class="date">
+                <Icon class="icon-watch" icon="material-symbols-light:alarm-smart-wake-outline"></Icon>
+                <span class="hour">{{ element.date }}</span>
+              </div>
+            </div>
+          </template>
+        </draggable>
+      </div>
+    </div>
     </main>
-  </div>
+</div>
 
   <!-- popup create -->
     <div id="popup-create-container" v-if="isShowPopupCreate">
